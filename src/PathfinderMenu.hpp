@@ -1,6 +1,9 @@
 #pragma once
 
 #include <Geode/Geode.hpp>
+#include <functional>
+#include <string>
+#include <vector>
 
 class PhosophursMenu : public geode::Popup {
 public:
