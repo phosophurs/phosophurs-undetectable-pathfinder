@@ -1,0 +1,110 @@
+{
+  "geode": "5.11.2",
+  "gd": {
+    "win": "2.2081"
+  },
+  "id": "phosophurs.undetectable-pathfinder",
+  "name": "Phosophurs Undetectable Pathfinder",
+  "version": "v0.1.0",
+  "developer": "phosophurs",
+  "description": "An experimental pathfinding and input-playback framework with configurable controls, progress-based test settings, and click-audio options.",
+  "tags": [
+    "gameplay",
+    "utility"
+  ],
+  "settings": {
+    "autoplay-key": {
+      "type": "keybind",
+      "name": "Toggle autoplay",
+      "description": "Starts or stops the pathfinder. Default: 4.",
+      "default": "4",
+      "category": "controls"
+    },
+    "menu-key": {
+      "type": "keybind",
+      "name": "Open / close menu",
+      "description": "Opens the mod settings. Default: Z.",
+      "default": "Z",
+      "category": "controls"
+    },
+    "pause-key": {
+      "type": "keybind",
+      "name": "Pause autoplay",
+      "default": "",
+      "category": "controls"
+    },
+    "recalculate-key": {
+      "type": "keybind",
+      "name": "Recalculate path",
+      "default": "",
+      "category": "controls"
+    },
+    "visual-key": {
+      "type": "keybind",
+      "name": "Toggle predicted path",
+      "default": "",
+      "category": "controls"
+    },
+    "sounds-key": {
+      "type": "keybind",
+      "name": "Toggle click sounds",
+      "default": "",
+      "category": "controls"
+    },
+    "progress-mistakes-enabled": {
+      "type": "bool",
+      "name": "Enable progress-based input variation",
+      "description": "Enables intentional random input variations for testing.",
+      "default": false,
+      "category": "progress"
+    },
+    "progress-start": {
+      "type": "int",
+      "name": "Start percentage",
+      "description": "Begin input variation at this level percentage.",
+      "default": 5,
+      "min": 5,
+      "max": 100,
+      "category": "progress"
+    },
+    "mistake-chance": {
+      "type": "int",
+      "name": "Mistake probability",
+      "description": "Chance from 0 to 100 for an eligible input to be varied.",
+      "default": 10,
+      "min": 0,
+      "max": 100,
+      "category": "progress"
+    },
+    "mistake-mode": {
+      "type": "int",
+      "name": "Random behaviour",
+      "description": "0 = extra clicks, 1 = skipped clicks, 2 = both.",
+      "default": 2,
+      "min": 0,
+      "max": 2,
+      "category": "progress"
+    },
+    "click-sounds-enabled": {
+      "type": "bool",
+      "name": "Enable click sounds",
+      "default": true,
+      "category": "audio"
+    },
+    "click-frequency": {
+      "type": "int",
+      "name": "Click tone frequency",
+      "description": "Base tone frequency in hertz.",
+      "default": 440,
+      "min": 80,
+      "max": 1600,
+      "category": "audio"
+    },
+    "show-predicted-path": {
+      "type": "bool",
+      "name": "Show predicted path",
+      "default": true,
+      "category": "visuals"
+    }
+  }
+}
