@@ -1,157 +1,35 @@
 {
   "geode": "5.11.2",
-  "gd": {
-    "win": "2.2081"
-  },
+  "gd": {"win": "2.2081"},
   "id": "phosophurs.undetectable-pathfinder",
   "name": "Phosophurs Undetectable Pathfinder",
-  "version": "v0.4.0",
+  "version": "v0.5.0",
   "developer": "phosophurs",
-  "description": "An experimental Geometry Dash pathfinding and input tool with configurable controls and realistic click audio.",
-  "tags": [
-    "gameplay",
-    "utility"
-  ],
+  "description": "Experimental Geometry Dash input tools, configurable click audio, and a five-tab pathfinder interface.",
+  "tags": ["gameplay", "utility"],
   "settings": {
-    "pathfinder-title": {
-      "type": "title",
-      "name": "Pathfinder"
-    },
-    "humanised-clicks-enabled": {
-      "type": "bool",
-      "name": "Humanised mouse clicks",
-      "description": "Randomly vary the position of ordinary mouse clicks. Frame-perfect clicks are never moved.",
-      "default": false
-    },
-    "humanised-click-strength": {
-      "type": "float",
-      "name": "Randomisation radius (pixels)",
-      "description": "Maximum distance from the intended mouse click position. Set to 0 for no offset.",
-      "default": 3,
-      "min": 0,
-      "max": 12,
-      "control": {
-        "slider": true,
-        "slider-step": 0.5,
-        "input": true
-      }
-    },
-    "gameplay-title": {
-      "type": "title",
-      "name": "Gameplay"
-    },
-    "autoplay-key": {
-      "type": "keybind",
-      "name": "Toggle autoplay",
-      "description": "Starts or stops the pathfinder. Default: 4.",
-      "default": "4",
-      "category": "gameplay"
-    },
-    "pause-key": {
-      "type": "keybind",
-      "name": "Pause autoplay",
-      "default": "",
-      "category": "gameplay"
-    },
-    "recalculate-key": {
-      "type": "keybind",
-      "name": "Recalculate path",
-      "default": "",
-      "category": "gameplay"
-    },
-    "visual-key": {
-      "type": "keybind",
-      "name": "Toggle predicted path",
-      "default": "",
-      "category": "gameplay"
-    },
-    "interface-title": {
-      "type": "title",
-      "name": "Interface & controls"
-    },
-    "menu-key": {
-      "type": "keybind",
-      "name": "Open / close menu",
-      "description": "Opens the mod settings. Default: Z.",
-      "default": "Z",
-      "category": "universal"
-    },
-    "sounds-key": {
-      "type": "keybind",
-      "name": "Toggle all click sounds",
-      "default": "",
-      "category": "universal"
-    },
-    "audio-title": {
-      "type": "title",
-      "name": "Click audio"
-    },
-    "click-sounds-enabled": {
-      "type": "bool",
-      "name": "Enable click sounds everywhere",
-      "description": "Master switch for all keyboard and mouse click sounds.",
-      "default": true
-    },
-    "keyboard-clicks-enabled": {
-      "type": "bool",
-      "name": "Keyboard click sounds",
-      "description": "Play a realistic keyboard-style click for keyboard inputs.",
-      "default": true
-    },
-    "mouse-clicks-enabled": {
-      "type": "bool",
-      "name": "Mouse click sounds",
-      "description": "Play a realistic mouse-button click for mouse inputs.",
-      "default": true
-    },
-    "waveform-variation": {
-      "type": "bool",
-      "name": "Subtle waveform variation",
-      "description": "Vary the waveform slightly between clicks while keeping the same overall sound.",
-      "default": true
-    },
-    "mistakes-title": {
-      "type": "title",
-      "name": "Progress variation"
-    },
-    "progress-mistakes-enabled": {
-      "type": "bool",
-      "name": "Enable progress-based input variation",
-      "description": "Enables intentional random input variations for testing.",
-      "default": false
-    },
-    "progress-start": {
-      "type": "int",
-      "name": "Start percentage",
-      "description": "Begin input variation at this level percentage.",
-      "default": 5,
-      "min": 5,
-      "max": 100
-    },
-    "mistake-chance": {
-      "type": "int",
-      "name": "Mistake probability",
-      "description": "Chance from 0 to 100 for an eligible input to be varied.",
-      "default": 10,
-      "min": 0,
-      "max": 100
-    },
-    "mistake-mode": {
-      "type": "int",
-      "name": "Random behaviour",
-      "description": "0 = extra clicks, 1 = skipped clicks, 2 = both.",
-      "default": 2,
-      "min": 0,
-      "max": 2
-    },
-    "visuals-title": {
-      "type": "title",
-      "name": "Visuals"
-    },
-    "show-predicted-path": {
-      "type": "bool",
-      "name": "Show predicted path",
-      "default": true
-    }
+    "pathfinder-title": {"type":"title","name":"Pathfinder"},
+    "humanised-clicks-enabled": {"type":"bool","name":"Humanised mouse clicks","description":"Randomly vary ordinary mouse-click positions. Frame-perfect clicks are never moved.","default":false},
+    "humanised-click-strength": {"type":"float","name":"Randomisation radius (pixels)","description":"Maximum distance from the intended mouse click position. Set to 0 for no offset.","default":3,"min":0,"max":12,"control":{"slider":true,"slider-step":0.5,"input":true}},
+    "gameplay-title": {"type":"title","name":"Gameplay"},
+    "autoplay-key": {"type":"keybind","name":"Toggle autoplay request","description":"Toggles the pathfinder request state. Automated gameplay is not implemented yet.","default":"4","category":"gameplay"},
+    "pause-key": {"type":"keybind","name":"Pause / resume request","default":"","category":"gameplay"},
+    "recalculate-key": {"type":"keybind","name":"Request path recalculation","default":"","category":"gameplay"},
+    "visual-key": {"type":"keybind","name":"Toggle predicted path visibility","default":"","category":"gameplay"},
+    "interface-title": {"type":"title","name":"Interface & controls"},
+    "menu-key": {"type":"keybind","name":"Open / close menu","description":"Opens the mod menu. Default: Z.","default":"Z","category":"universal"},
+    "sounds-key": {"type":"keybind","name":"Toggle all click sounds","default":"","category":"universal"},
+    "audio-title": {"type":"title","name":"Click audio"},
+    "click-sounds-enabled": {"type":"bool","name":"Enable click sounds everywhere","description":"Master switch for all keyboard and mouse click sounds.","default":true},
+    "keyboard-clicks-enabled": {"type":"bool","name":"Keyboard click sounds","description":"Play a keyboard-style click for keyboard inputs.","default":true},
+    "mouse-clicks-enabled": {"type":"bool","name":"Mouse click sounds","description":"Play a mouse-button click for mouse inputs.","default":true},
+    "waveform-variation": {"type":"bool","name":"Subtle waveform variation","description":"Vary the waveform between clicks while keeping the overall sound consistent.","default":true},
+    "mistakes-title": {"type":"title","name":"Progress variation"},
+    "progress-mistakes-enabled": {"type":"bool","name":"Enable progress-based input variation","description":"Configuration only; execution requires the future input scheduler.","default":false},
+    "progress-start": {"type":"int","name":"Start percentage","description":"Level percentage at which future input variation should begin.","default":5,"min":5,"max":100},
+    "mistake-chance": {"type":"int","name":"Variation probability","description":"Chance from 0 to 100 for an eligible future input to be varied.","default":10,"min":0,"max":100},
+    "mistake-mode": {"type":"int","name":"Variation behaviour","description":"0 = extra clicks, 1 = skipped clicks, 2 = both.","default":2,"min":0,"max":2},
+    "visuals-title": {"type":"title","name":"Visuals"},
+    "show-predicted-path": {"type":"bool","name":"Show predicted path","description":"Visibility preference for the future path overlay.","default":true}
   }
 }
