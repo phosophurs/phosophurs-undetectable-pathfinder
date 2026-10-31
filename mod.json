@@ -1,62 +1,80 @@
 {
   "geode": "5.11.2",
-  "gd": {
-    "win": "2.2081"
-  },
+  "gd": { "win": "2.2081" },
   "id": "phosophurs.undetectable-pathfinder",
   "name": "Phosophurs Undetectable Pathfinder",
-  "version": "v0.1.0",
+  "version": "v0.2.0",
   "developer": "phosophurs",
-  "description": "An experimental pathfinding and input-playback framework with configurable controls, progress-based test settings, and click-audio options.",
-  "tags": [
-    "gameplay",
-    "utility"
-  ],
+  "description": "An experimental Geometry Dash pathfinding and input tool with configurable controls and realistic click audio.",
+  "tags": ["gameplay", "utility"],
   "settings": {
     "autoplay-key": {
       "type": "keybind",
       "name": "Toggle autoplay",
       "description": "Starts or stops the pathfinder. Default: 4.",
       "default": "4",
-      "category": "controls"
+      "category": "gameplay"
     },
     "menu-key": {
       "type": "keybind",
       "name": "Open / close menu",
       "description": "Opens the mod settings. Default: Z.",
       "default": "Z",
-      "category": "controls"
+      "category": "universal"
     },
     "pause-key": {
       "type": "keybind",
       "name": "Pause autoplay",
       "default": "",
-      "category": "controls"
+      "category": "gameplay"
     },
     "recalculate-key": {
       "type": "keybind",
       "name": "Recalculate path",
       "default": "",
-      "category": "controls"
+      "category": "gameplay"
     },
     "visual-key": {
       "type": "keybind",
       "name": "Toggle predicted path",
       "default": "",
-      "category": "controls"
+      "category": "gameplay"
     },
     "sounds-key": {
       "type": "keybind",
-      "name": "Toggle click sounds",
+      "name": "Toggle all click sounds",
       "default": "",
-      "category": "controls"
+      "category": "universal"
+    },
+    "click-sounds-enabled": {
+      "type": "bool",
+      "name": "Enable click sounds everywhere",
+      "description": "Master switch for all keyboard and mouse click sounds.",
+      "default": true
+    },
+    "keyboard-clicks-enabled": {
+      "type": "bool",
+      "name": "Keyboard click sounds",
+      "description": "Play a realistic keyboard-style click for keyboard inputs.",
+      "default": true
+    },
+    "mouse-clicks-enabled": {
+      "type": "bool",
+      "name": "Mouse click sounds",
+      "description": "Play a realistic mouse-button click for mouse inputs.",
+      "default": true
+    },
+    "waveform-variation": {
+      "type": "bool",
+      "name": "Subtle waveform variation",
+      "description": "Vary the waveform slightly between clicks while keeping the same overall sound.",
+      "default": true
     },
     "progress-mistakes-enabled": {
       "type": "bool",
       "name": "Enable progress-based input variation",
       "description": "Enables intentional random input variations for testing.",
-      "default": false,
-      "category": "progress"
+      "default": false
     },
     "progress-start": {
       "type": "int",
@@ -64,8 +82,7 @@
       "description": "Begin input variation at this level percentage.",
       "default": 5,
       "min": 5,
-      "max": 100,
-      "category": "progress"
+      "max": 100
     },
     "mistake-chance": {
       "type": "int",
@@ -73,8 +90,7 @@
       "description": "Chance from 0 to 100 for an eligible input to be varied.",
       "default": 10,
       "min": 0,
-      "max": 100,
-      "category": "progress"
+      "max": 100
     },
     "mistake-mode": {
       "type": "int",
@@ -82,29 +98,12 @@
       "description": "0 = extra clicks, 1 = skipped clicks, 2 = both.",
       "default": 2,
       "min": 0,
-      "max": 2,
-      "category": "progress"
-    },
-    "click-sounds-enabled": {
-      "type": "bool",
-      "name": "Enable click sounds",
-      "default": true,
-      "category": "audio"
-    },
-    "click-frequency": {
-      "type": "int",
-      "name": "Click tone frequency",
-      "description": "Base tone frequency in hertz.",
-      "default": 440,
-      "min": 80,
-      "max": 1600,
-      "category": "audio"
+      "max": 2
     },
     "show-predicted-path": {
       "type": "bool",
       "name": "Show predicted path",
-      "default": true,
-      "category": "visuals"
+      "default": true
     }
   }
 }
