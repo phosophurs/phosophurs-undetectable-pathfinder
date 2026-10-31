@@ -211,8 +211,8 @@ void PhosophursMenu::buildPage() {
             addInfo("Keyboard and mouse use separate generated WAV samples.", y);
             addInfo("Input-source detection is heuristic, not device-perfect.", y);
             addAction("Click-sound keybind", "SETTINGS", [] { openSettingsPopup(Mod::get()); }, y);
-            addAction("Preview keyboard click", "PLAY", [] { audio::playKeyboardClick(); }, y);
-            addAction("Preview mouse click", "PLAY", [] { audio::playMouseClick(); }, y);
+            addAction("Preview keyboard click", "PLAY", [] { phosophurs::audio::playKeyboardClick(); }, y);
+            addAction("Preview mouse click", "PLAY", [] { phosophurs::audio::playMouseClick(); }, y);
             break;
         case 3:
             addSection("VISUAL OVERLAY", y);
