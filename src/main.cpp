@@ -6,6 +6,7 @@
 #include <windows.h>
 
 #include "ClickAudio.hpp"
+#include "PathfinderMenu.hpp"
 
 using namespace geode::prelude;
 
@@ -28,7 +29,7 @@ namespace {
     }
 
     void openMenu() {
-        geode::openSettingsPopup(Mod::get());
+        if (auto menu = PhosophursMenu::create()) menu->show();
     }
 
     void pauseAutoplay() {
