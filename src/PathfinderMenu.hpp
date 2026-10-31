@@ -11,6 +11,7 @@ public:
 
 protected:
     bool init();
+    void onExit() override;
     void buildTabs();
     void buildPage();
 
