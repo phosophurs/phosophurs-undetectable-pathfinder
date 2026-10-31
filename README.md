@@ -8,15 +8,19 @@ Experimental Geometry Dash Geode mod project.
 - Geode SDK 5.11.2
 
 ## Build
-The GitHub Actions workflow builds a Windows `.geode` artifact on pushes to `main`/`master` and on manual workflow dispatch.
+The GitHub Actions workflow builds a Windows `.geode` artifact on pushes to `main`/ `master` and on manual workflow dispatch.
 
-The project uses the same Geode build action and CMake layout as the Frame Cycle project.
-
-## Current scaffold
-- Configurable keybind settings (defaults: `4` for autoplay, `Z` for menu).
-- Settings for progress-based input variation (start %, probability, behaviour).
-- Settings for click tone frequency and predicted-path visibility.
-- Basic keybind listeners and status notifications.
+## Implemented foundation
+- Configurable keybinds (default: `4` for autoplay, `Z` for the Geode settings popup).
+- Master click-sounds toggle, plus separate keyboard and mouse sound toggles.
+- Generated short keyboard-style and mouse-button-style WAV clicks.
+- Four subtle waveform variants per sound bank, with optional random variation.
+- Gameplay input hook that plays a keyboard or mouse sound based on the currently held Windows mouse-button state.
+- Progress-based input variation settings (start percentage, probability, and behaviour mode).
 
 ## Development status
-This is the initial project scaffold, not a completed pathfinder. The actual level-analysis/route solver, gameplay input driver, custom Mega Hack-style in-game tabbed menu, path renderer, and waveform audio generator still need implementation and testing. No anti-cheat bypass or concealment is included.
+This is an early development build, not the completed pathfinder. The current autoplay keybind still changes a status state only. The level-analysis/route solver, actual automated input scheduler, progress-mistake execution, predicted-path renderer, and custom Mega Hack-style tabbed interface remain to be implemented and tested.
+
+The click-audio functions are separated from the input hook so the future pathfinder can explicitly request keyboard or mouse click audio depending on its selected input method.
+
+No anti-cheat bypass or concealment is included.
