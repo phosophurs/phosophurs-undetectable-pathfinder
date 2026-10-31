@@ -10,6 +10,7 @@ namespace {
     constexpr float MENU_W = 600.f;
     constexpr float MENU_H = 400.f;
     bool g_menuOpen = false;
+    PhosophursMenu* g_menuInstance = nullptr;
     std::string boolText(bool value) { return value ? "ON" : "OFF"; }
     std::string floatText(double value) { return fmt::format("{:.1f}", value); }
     void notifySetting(char const* label, bool enabled) {
@@ -28,6 +29,8 @@ bool PhosophursMenu::init() {
     if (g_menuOpen) return false;
     if (!Popup::init(MENU_W, MENU_H)) return false;
     g_menuOpen = true;
+    g_menuInstance = this;
+    this->setScale(0.82f);
 
     auto title = CCLabelBMFont::create("PHOSOPHURS // PATHFINDER", "bigFont.fnt");
     title->setScale(0.48f);
@@ -233,7 +236,16 @@ void PhosophursMenu::buildPage() {
     }
 }
 
+void PhosophursMenu::toggle() {
+    if (g_menuInstance) {
+        g_menuInstance->removeFromParentAndCleanup(true);
+        return;
+    }
+    if (auto menu = PhosophursMenu::create()) menu->show();
+}
+
 void PhosophursMenu::onExit() {
     g_menuOpen = false;
+    g_menuInstance = nullptr;
     Popup::onExit();
 }
