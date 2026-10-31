@@ -41,25 +41,25 @@ bool PhosophursMenu::init() {
     title->setScale(0.48f);
     title->setAnchorPoint({0.f, 0.5f});
     title->setPosition(24.f, MENU_H - 25.f);
-    m_mainLayer->addChild(title);
+    this->addChild(title);
 
     auto version = CCLabelBMFont::create("v0.3.0  |  EXPERIMENTAL", "goldFont.fnt");
     version->setScale(0.32f);
     version->setAnchorPoint({1.f, 0.5f});
     version->setPosition(MENU_W - 22.f, MENU_H - 25.f);
-    m_mainLayer->addChild(version);
+    this->addChild(version);
 
     auto divider = CCLayerColor::create({65, 76, 100, 255}, MENU_W - 40.f, 1.f);
     divider->setPosition(20.f, MENU_H - 48.f);
-    m_mainLayer->addChild(divider);
+    this->addChild(divider);
 
     m_tabMenu = CCMenu::create();
     m_tabMenu->setPosition(0.f, 0.f);
-    m_mainLayer->addChild(m_tabMenu);
+    this->addChild(m_tabMenu);
 
     m_page = CCNode::create();
     m_page->setPosition(0.f, 0.f);
-    m_mainLayer->addChild(m_page);
+    this->addChild(m_page);
 
     buildTabs();
     selectTab(0);
@@ -93,7 +93,7 @@ void PhosophursMenu::addSection(char const* title, float& y) {
     label->setAnchorPoint({0.f, 0.5f});
     label->setPosition(34.f, y);
     m_page->addChild(label);
-    y -= 22.f;
+    y -= 18.f;
 }
 
 void PhosophursMenu::addInfo(char const* text, float& y) {
@@ -103,7 +103,7 @@ void PhosophursMenu::addInfo(char const* text, float& y) {
     label->setPosition(38.f, y);
     label->setColor({190, 200, 218});
     m_page->addChild(label);
-    y -= 19.f;
+    y -= 16.f;
 }
 
 void PhosophursMenu::addAction(char const* label, std::function<void()> callback, float& y) {
@@ -122,7 +122,7 @@ void PhosophursMenu::addAction(char const* label, std::function<void()> callback
     button->setPosition(MENU_W - 75.f, y);
     menu->addChild(button);
     m_page->addChild(menu);
-    y -= 25.f;
+    y -= 21.f;
 }
 
 void PhosophursMenu::addToggle(char const* label, char const* setting, float& y) {
