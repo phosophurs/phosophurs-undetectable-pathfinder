@@ -29,7 +29,7 @@ namespace {
     }
 
     void openMenu() {
-        if (auto menu = PhosophursMenu::create()) menu->show();
+        PhosophursMenu::toggle();
     }
 
     void pauseAutoplay() {
