@@ -1,30 +1,35 @@
 # Phosophurs Undetectable Pathfinder
 
-Experimental Geometry Dash Geode mod project with an in-game five-tab configuration menu.
+An experimental Windows Geometry Dash mod built with Geode. This project is a work-in-progress input/audio and pathfinding foundation; it is **not yet an automatic level solver**.
 
-## Target
-- Windows
-- Geometry Dash 2.2081
-- Geode SDK 5.11.2
+## Compatibility
+- Geometry Dash: Windows 2.2081
+- Geode SDK: 5.11.2
+- Build target: Win64
+
+## Current features
+- Five-tab in-game menu (Autoplay, Pathfinder, Sounds, Visuals, Settings), opened with **Z** by default.
+- Configurable keybinds through Geode's settings UI.
+- Autoplay request toggle on **4** by default. At this stage it changes the request/status state only; it does not control the player.
+- Separate generated keyboard-style and mouse-style click sounds.
+- Four waveform variants per sound bank, with optional random variation.
+- In-menu keyboard and mouse sound previews.
+- Master, keyboard, mouse, and waveform-variation audio settings.
+- Optional random mouse-click offset helper, configurable from 0–12 px. Frame-perfect inputs always receive zero offset; keyboard inputs are unaffected.
+- Optional progress-variation settings for future input scheduling.
+
+## Not implemented yet
+- Level analysis and route solving.
+- Automated gameplay input scheduling.
+- Pause/resume of an active automated run.
+- Progress-based mistake execution.
+- Predicted path rendering and hazard/collision preview.
+- Applying the humanised offset helper to live mouse input.
+
+The click-sound hook currently infers mouse input from the Windows mouse-button state. This is a heuristic and cannot reliably identify every input source. The audio preview buttons provide a direct way to test each sound bank.
 
 ## Build
-The GitHub Actions workflow builds a Windows `.geode` artifact on pushes to `main` / `master` and on manual workflow dispatch.
+Pushes to the main branch trigger the Windows Geode build workflow. A successful run uploads a `Phosophurs-Windows-geode` artifact. You can also run the workflow manually from the repository's Actions tab.
 
-## Implemented foundation
-- Configurable keybinds (default: `4` for autoplay, `Z` for the Geode settings popup).
-- Master click-sounds toggle, plus separate keyboard and mouse sound toggles.
-- Generated short keyboard-style and mouse-button-style WAV clicks.
-- Four subtle waveform variants per sound bank, with optional random variation.
-- Gameplay input hook that plays a keyboard or mouse sound based on the currently held Windows mouse-button state.
-- Progress-based input variation settings (start percentage, probability, and behaviour mode).
-- **Humanised mouse-click offset engine:** optional random positions inside a configurable 0–12 px radius (default 3 px when enabled). Offsets are uniformly distributed inside a circle. Frame-perfect clicks always get a zero offset; keyboard inputs are unaffected.
-- **Custom five-tab in-game menu:** Autoplay, Pathfinder, Sounds, Visuals, and Settings, opened with `Z`. It includes live setting toggles/cyclers and keybind-settings access.
-
-## Development status
-This is an early development build, not the completed pathfinder. The current autoplay keybind still changes a status state only. The level-analysis/route solver, actual automated input scheduler, progress-mistake execution, predicted-path renderer, and custom Mega Hack-style tabbed interface remain to be implemented and tested.
-
-The custom menu is implemented as an early, intentionally unpolished UI pass. It still needs visual spacing/scrolling polish and more direct keybind editing. The humanised offset helper is now in the codebase, but it is not yet connected to live gameplay because the mouse-coordinate input scheduler/pathfinder has not been implemented. When that scheduler is added, it must add the returned offset to ordinary mouse coordinates immediately before dispatch, skip the helper for keyboard inputs, and never clamp/retry/correct a click after it has caused a death. Randomised mistakes should remain genuine mistakes.
-
-The click-audio functions are separated from the input hook so the future pathfinder can explicitly request keyboard or mouse click audio depending on its selected input method.
-
-No anti-cheat bypass or concealment is included.
+## Safety and integrity
+This project does not include anti-cheat bypasses, stealth mechanisms, or detection-evasion features. The name is a project name, not a claim that the mod is undetectable.
