@@ -90,7 +90,7 @@ void PhosophursMenu::addSection(char const* title, float& y) {
     auto line = CCLayerColor::create({63, 83, 115, 210}, MENU_W - 90.f, 1.f);
     line->setPosition(34.f, y - 11.f);
     m_page->addChild(line);
-    y -= 25.f;
+    y -= 22.f;
 }
 
 void PhosophursMenu::addInfo(char const* text, float& y) {
@@ -103,12 +103,12 @@ void PhosophursMenu::addInfo(char const* text, float& y) {
     label->setPosition(38.f, y);
     label->setColor({183, 195, 215});
     m_page->addChild(label);
-    y -= 19.f;
+    y -= 17.f;
 }
 
 void PhosophursMenu::addAction(char const* label, char const* buttonText, std::function<void()> callback, float& y) {
-    auto row = CCLayerColor::create({29, 39, 57, 175}, MENU_W - 78.f, 25.f);
-    row->setPosition(30.f, y - 12.f);
+    auto row = CCLayerColor::create({29, 39, 57, 175}, MENU_W - 78.f, 22.f);
+    row->setPosition(30.f, y - 10.5f);
     m_page->addChild(row);
     auto text = CCLabelBMFont::create(label, "bigFont.fnt");
     text->setScale(0.38f);
@@ -126,7 +126,7 @@ void PhosophursMenu::addAction(char const* label, char const* buttonText, std::f
     button->setPosition(MENU_W - 91.f, y);
     menu->addChild(button);
     m_page->addChild(menu);
-    y -= 29.f;
+    y -= 25.f;
 }
 
 void PhosophursMenu::addToggle(char const* label, char const* setting, float& y) {
