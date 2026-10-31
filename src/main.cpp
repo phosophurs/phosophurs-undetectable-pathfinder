@@ -23,9 +23,9 @@ namespace {
         g_autoplayRequested = !g_autoplayRequested;
         g_paused = false;
         notify(g_autoplayRequested
-            ? "PHOSOPHURS: AUTOPLAY REQUESTED"
-            : "PHOSOPHURS: AUTOPLAY STOPPED");
-        log::info("Phosophurs autoplay requested: {}", g_autoplayRequested);
+            ? "PHOSOPHURS: REQUEST ENABLED (ENGINE NOT READY)"
+            : "PHOSOPHURS: REQUEST DISABLED");
+        log::info("Phosophurs autoplay request state: {}", g_autoplayRequested);
     }
 
     void openMenu() {
@@ -35,7 +35,7 @@ namespace {
     void pauseAutoplay() {
         if (!g_autoplayRequested) return;
         g_paused = !g_paused;
-        notify(g_paused ? "PHOSOPHURS: PAUSED" : "PHOSOPHURS: RESUMED");
+        notify(g_paused ? "PHOSOPHURS: REQUEST PAUSED" : "PHOSOPHURS: REQUEST RESUMED");
     }
 
     void recalculatePath() {
@@ -43,7 +43,7 @@ namespace {
             notify("PHOSOPHURS: START AUTOPLAY FIRST");
             return;
         }
-        notify("PHOSOPHURS: PATH RECALCULATION REQUESTED");
+        notify("PHOSOPHURS: PATH SOLVER NOT IMPLEMENTED");
     }
 
     void toggleClickSounds() {
@@ -104,8 +104,8 @@ $on_game(Loaded) {
         [](Keybind const&, bool down, bool repeat, double) {
             if (!down || repeat) return;
             g_showPath = !g_showPath;
-            notify(g_showPath ? "PHOSOPHURS: PATH DISPLAY ON"
-                              : "PHOSOPHURS: PATH DISPLAY OFF");
+            notify(g_showPath ? "PHOSOPHURS: PATH DISPLAY PREFERENCE ON (OVERLAY NOT READY)"
+                              : "PHOSOPHURS: PATH DISPLAY PREFERENCE OFF");
         });
 
     listenForKeybindSettingPresses("sounds-key",
