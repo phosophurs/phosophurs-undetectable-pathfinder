@@ -5,7 +5,7 @@
   },
   "id": "phosophurs.undetectable-pathfinder",
   "name": "Phosophurs Undetectable Pathfinder",
-  "version": "v0.3.0",
+  "version": "v0.4.0",
   "developer": "phosophurs",
   "description": "An experimental Geometry Dash pathfinding and input tool with configurable controls and realistic click audio.",
   "tags": [
