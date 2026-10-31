@@ -23,9 +23,9 @@ MouseOffset getHumanisedMouseOffset(bool framePerfect) {
     auto mod = geode::Mod::get();
     if (!mod->getSettingValue<bool>("humanised-clicks-enabled")) return {};
 
-    const float configuredRadius =
-        mod->getSettingValue<float>("humanised-click-strength");
-    const float radius = std::clamp(configuredRadius, 0.f, 12.f);
+    const double configuredRadius =
+        mod->getSettingValue<double>("humanised-click-strength");
+    const float radius = static_cast<float>(std::clamp(configuredRadius, 0.0, 12.0));
     if (radius <= 0.f) return {};
 
     // Uniform distribution over a disk, rather than a square, so the maximum
