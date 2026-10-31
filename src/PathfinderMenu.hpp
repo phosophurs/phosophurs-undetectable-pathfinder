@@ -8,7 +8,7 @@ class PhosophursMenu : public geode::Popup {
 public:
     static PhosophursMenu* create();
 protected:
-    bool init();
+    bool init() override;
     void onExit() override;
     void buildTabs();
     void buildPage();
