@@ -1,4 +1,9 @@
 #include <Geode/Geode.hpp>
+#include <Geode/modify/PlayerObject.hpp>
+#include <Geode/binding/PlayerObject.hpp>
+#include <windows.h>
+
+#include "ClickAudio.hpp"
 
 using namespace geode::prelude;
 
@@ -6,7 +11,6 @@ namespace {
     bool g_autoplayRequested = false;
     bool g_paused = false;
     bool g_showPath = true;
-    bool g_clickSounds = true;
 
     void notify(std::string const& message) {
         Notification::create(message, NotificationIcon::Info, 2.0f)->show();
@@ -15,9 +19,6 @@ namespace {
     void toggleAutoplay() {
         g_autoplayRequested = !g_autoplayRequested;
         g_paused = false;
-
-        // This is the control/state scaffold. The actual level solver and safe
-        // input driver will be implemented in a later development stage.
         notify(g_autoplayRequested
             ? "PHOSOPHURS: AUTOPLAY REQUESTED"
             : "PHOSOPHURS: AUTOPLAY STOPPED");
@@ -41,7 +42,39 @@ namespace {
         }
         notify("PHOSOPHURS: PATH RECALCULATION REQUESTED");
     }
+
+    void toggleClickSounds() {
+        auto mod = Mod::get();
+        bool enabled = mod->getSettingValue<bool>("click-sounds-enabled");
+        mod->setSettingValue<bool>("click-sounds-enabled", !enabled);
+        notify(!enabled ? "PHOSOPHURS: CLICK SOUNDS ON"
+                        : "PHOSOPHURS: CLICK SOUNDS OFF");
+    }
+
+    bool isMouseButtonDown() {
+        return (GetAsyncKeyState(VK_LBUTTON) & 0x8000) ||
+               (GetAsyncKeyState(VK_RBUTTON) & 0x8000) ||
+               (GetAsyncKeyState(VK_MBUTTON) & 0x8000);
+    }
 }
+
+// The player input hook is the common point reached by normal and
+// mod-synthesised gameplay presses. Mouse presses are identified from the
+// Windows button state; the pathfinder can also call the explicit audio
+// functions when it selects a particular input device.
+class $modify(PhosophursPlayer, PlayerObject) {
+    bool pushButton(PlayerButton button) {
+        bool result = PlayerObject::pushButton(button);
+        if (result) {
+            if (isMouseButtonDown()) {
+                phosophurs::audio::playMouseClick();
+            } else {
+                phosophurs::audio::playKeyboardClick();
+            }
+        }
+        return result;
+    }
+};
 
 $on_game(Loaded) {
     listenForKeybindSettingPresses("autoplay-key",
@@ -74,10 +107,7 @@ $on_game(Loaded) {
 
     listenForKeybindSettingPresses("sounds-key",
         [](Keybind const&, bool down, bool repeat, double) {
-            if (!down || repeat) return;
-            g_clickSounds = !g_clickSounds;
-            notify(g_clickSounds ? "PHOSOPHURS: CLICK SOUNDS ON"
-                                 : "PHOSOPHURS: CLICK SOUNDS OFF");
+            if (down && !repeat) toggleClickSounds();
         });
 
     log::info("Phosophurs Undetectable Pathfinder loaded.");
