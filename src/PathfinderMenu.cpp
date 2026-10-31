@@ -8,8 +8,9 @@
 using namespace geode::prelude;
 
 namespace {
-    constexpr float MENU_W = 440.f;
-    constexpr float MENU_H = 285.f;
+    constexpr float MENU_W = 540.f;
+    constexpr float MENU_H = 360.f;
+    bool g_menuOpen = false;
 
     std::string boolText(bool value) {
         return value ? "ON" : "OFF";
@@ -35,7 +36,9 @@ PhosophursMenu* PhosophursMenu::create() {
 }
 
 bool PhosophursMenu::init() {
+    if (g_menuOpen) return false;
     if (!Popup::init(MENU_W, MENU_H)) return false;
+    g_menuOpen = true;
 
     auto title = CCLabelBMFont::create("PHOSOPHURS // PATHFINDER", "bigFont.fnt");
     title->setScale(0.48f);
@@ -70,10 +73,10 @@ void PhosophursMenu::buildTabs() {
     static std::array<char const*, 5> labels = {
         "AUTOPLAY", "PATHFINDER", "SOUNDS", "VISUALS", "SETTINGS"
     };
-    const float startX = 65.f;
-    const float gap = 78.f;
+    const float startX = 76.f;
+    const float gap = 97.f;
     for (int i = 0; i < static_cast<int>(labels.size()); ++i) {
-        auto sprite = ButtonSprite::create(labels[i], 66.f, false, "goldFont.fnt", "GJ_button_04.png", 22.f, 0.38f);
+        auto sprite = ButtonSprite::create(labels[i], 82.f, false, "goldFont.fnt", "GJ_button_04.png", 22.f, 0.34f);
         auto item = CCMenuItemExt::createSpriteExtra(sprite, [this, i](CCMenuItem*) {
             selectTab(i);
         });
@@ -99,6 +102,9 @@ void PhosophursMenu::addSection(char const* title, float& y) {
 void PhosophursMenu::addInfo(char const* text, float& y) {
     auto label = CCLabelBMFont::create(text, "bigFont.fnt");
     label->setScale(0.34f);
+    const float maxWidth = MENU_W - 76.f;
+    if (label->getContentSize().width * label->getScale() > maxWidth)
+        label->setScale(maxWidth / label->getContentSize().width);
     label->setAnchorPoint({0.f, 0.5f});
     label->setPosition(38.f, y);
     label->setColor({190, 200, 218});
@@ -109,6 +115,9 @@ void PhosophursMenu::addInfo(char const* text, float& y) {
 void PhosophursMenu::addAction(char const* label, std::function<void()> callback, float& y) {
     auto text = CCLabelBMFont::create(label, "bigFont.fnt");
     text->setScale(0.38f);
+    const float maxLabelWidth = MENU_W - 190.f;
+    if (text->getContentSize().width * text->getScale() > maxLabelWidth)
+        text->setScale(maxLabelWidth / text->getContentSize().width);
     text->setAnchorPoint({0.f, 0.5f});
     text->setPosition(38.f, y);
     m_page->addChild(text);
@@ -116,10 +125,10 @@ void PhosophursMenu::addAction(char const* label, std::function<void()> callback
     auto menu = CCMenu::create();
     menu->setPosition(0.f, 0.f);
     auto button = CCMenuItemExt::createSpriteExtra(
-        ButtonSprite::create("CHANGE", 70.f, false, "goldFont.fnt", "GJ_button_05.png", 20.f, 0.38f),
+        ButtonSprite::create("CHANGE", 76.f, false, "goldFont.fnt", "GJ_button_05.png", 20.f, 0.36f),
         [callback = std::move(callback)](CCMenuItem*) { callback(); }
     );
-    button->setPosition(MENU_W - 75.f, y);
+    button->setPosition(MENU_W - 82.f, y);
     menu->addChild(button);
     m_page->addChild(menu);
     y -= 21.f;
@@ -174,7 +183,7 @@ void PhosophursMenu::addFloatCycle(char const* label, char const* setting, float
 
 void PhosophursMenu::buildPage() {
     m_page->removeAllChildrenWithCleanup(true);
-    float y = MENU_H - 103.f;
+    float y = MENU_H - 108.f;
 
     switch (m_tab) {
         case 0: {
@@ -239,4 +248,9 @@ void PhosophursMenu::buildPage() {
             break;
         }
     }
+}
+
+void PhosophursMenu::onExit() {
+    g_menuOpen = false;
+    Popup::onExit();
 }
