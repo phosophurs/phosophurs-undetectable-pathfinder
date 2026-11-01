@@ -3,6 +3,10 @@
 #include <Geode/modify/GJBaseGameLayer.hpp>
 #include <Geode/modify/PlayLayer.hpp>
 #include <Geode/binding/PlayerObject.hpp>
+#include <Geode/binding/GJBaseGameLayer.hpp>
+#include <Geode/binding/PlayLayer.hpp>
+#include <vector>
+#include <cstddef>
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
 #include <windows.h>
