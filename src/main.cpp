@@ -26,6 +26,7 @@ namespace {
         bool isPlayer1;
     };
     std::vector<RecordedInput> g_route;
+    std::vector<RecordedInput> g_recordingRoute;
     size_t g_replayIndex = 0;
     bool g_recording = false;
     bool g_playbackActive = false;
@@ -301,7 +302,7 @@ class $modify(PhosophursGameLayer, GJBaseGameLayer) {
         bool wasGrounded = layer && layer->m_player1 && layer->m_player1->m_isOnGround;
         GJBaseGameLayer::handleButton(down, button, isPlayer1);
         if (layer && g_recording && !g_dispatchingReplayInput) {
-            g_route.push_back({layer->m_gameState.m_levelTime, down, button, isPlayer1});
+            g_recordingRoute.push_back({layer->m_gameState.m_levelTime, down, button, isPlayer1});
             if (down && wasGrounded && layer->m_player1) {
                 const float measured = static_cast<float>(std::abs(layer->m_player1->m_yVelocity));
                 if (measured > 1.f && measured < 25.f) g_jumpImpulse = measured;
@@ -347,18 +348,12 @@ class $modify(PhosophursPlayLayer, PlayLayer) {
     bool init(GJGameLevel* level, bool useReplay, bool dontCreateObjects) {
         const bool result = PlayLayer::init(level, useReplay, dontCreateObjects);
         if (result) {
-            // Preserve the completed attempt when the player retries. The
-            // previous implementation cleared the route here, making replay
-            // impossible immediately after the first death.
-            const bool hasRecordedRoute = !g_route.empty() && !g_recording;
-            if (!hasRecordedRoute) {
-                g_route.clear();
-                g_recording = true;
-                log::info("Phosophurs: recording this attempt's input route.");
-            } else {
-                g_recording = false;
-                log::info("Phosophurs: keeping the previous attempt for replay.");
-            }
+            // Keep the last completed route available while recording the
+            // new attempt into a separate buffer. This allows either replaying
+            // the previous attempt or replacing it with a new one.
+            g_recordingRoute.clear();
+            g_recording = true;
+            log::info("Phosophurs: recording this attempt's input route.");
             g_levelGeometry.clear();
             g_lastScannedObjectCount = 0;
             // Keep calibrated movement/jump values across retries of the same
@@ -373,16 +368,23 @@ class $modify(PhosophursPlayLayer, PlayLayer) {
     }
 
     void destroyPlayer(PlayerObject* player, GameObject* object) {
-        if (!g_playbackActive) {
+        if (!g_playbackActive && g_recording) {
             g_recording = false;
-            if (!g_route.empty()) {
+            if (!g_recordingRoute.empty()) {
+                g_route = g_recordingRoute;
                 notify(fmt::format("PHOSOPHURS: RECORDED {} INPUT EVENTS", g_route.size()));
             }
+            g_recordingRoute.clear();
         }
         PlayLayer::destroyPlayer(player, object);
     }
 
     void levelComplete() {
+        if (g_recording && !g_recordingRoute.empty()) {
+            g_route = g_recordingRoute;
+            notify(fmt::format("PHOSOPHURS: SAVED {} INPUT EVENTS", g_route.size()));
+        }
+        g_recordingRoute.clear();
         g_recording = false;
         g_playbackActive = false;
         PlayLayer::levelComplete();
@@ -392,6 +394,7 @@ class $modify(PhosophursPlayLayer, PlayLayer) {
         g_recording = false;
         g_playbackActive = false;
         g_route.clear();
+        g_recordingRoute.clear();
         g_replayIndex = 0;
         PlayLayer::onQuit();
     }
