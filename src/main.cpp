@@ -7,6 +7,7 @@
 #include <Geode/binding/PlayLayer.hpp>
 #include <vector>
 #include <cstddef>
+#include <algorithm>
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
 #include <windows.h>
@@ -30,6 +31,31 @@ namespace {
     bool g_dispatchingReplayInput = false;
     bool g_paused = false;
     bool g_showPath = true;
+
+    // Immutable snapshot of the level's placed geometry. This is the input
+    // map for the predictive planner; it is deliberately separate from the
+    // recorded route so a future solver can reason about unseen sections.
+    struct LevelObjectSnapshot {
+        int objectID;
+        cocos2d::CCRect bounds;
+    };
+    std::vector<LevelObjectSnapshot> g_levelGeometry;
+    size_t g_lastScannedObjectCount = 0;
+
+    void scanLevelGeometry(PlayLayer* layer) {
+        g_levelGeometry.clear();
+        if (!layer || !layer->m_objects) return;
+
+        const unsigned int count = layer->m_objects->count();
+        g_levelGeometry.reserve(count);
+        for (unsigned int i = 0; i < count; ++i) {
+            auto object = static_cast<GameObject*>(layer->m_objects->objectAtIndex(i));
+            if (!object || object->m_isDisabled || object->m_isDecoration) continue;
+            const auto bounds = object->getObjectRect();
+            g_levelGeometry.push_back({object->m_objectID, bounds});
+        }
+        g_lastScannedObjectCount = g_levelGeometry.size();
+    }
 
     void notify(std::string const& message) {
         Notification::create(message, NotificationIcon::Info, 2.0f)->show();
@@ -69,7 +95,22 @@ namespace {
     }
 
     void recalculatePath() {
-        notify("PHOSOPHURS: ROUTE SOLVER IS THE NEXT BUILD STAGE");
+        auto layer = PlayLayer::get();
+        if (!layer) {
+            notify("PHOSOPHURS: ENTER A LEVEL BEFORE SCANNING");
+            return;
+        }
+
+        scanLevelGeometry(layer);
+        if (g_levelGeometry.empty()) {
+            notify("PHOSOPHURS: LEVEL SCAN FOUND NO COLLISION OBJECTS");
+            return;
+        }
+
+        notify(fmt::format(
+            "PHOSOPHURS: SCANNED {} LEVEL OBJECTS - PLANNER STILL IN DEVELOPMENT",
+            g_lastScannedObjectCount
+        ));
     }
 
     void toggleClickSounds() {
@@ -120,6 +161,8 @@ class $modify(PhosophursPlayLayer, PlayLayer) {
         const bool result = PlayLayer::init(level, useReplay, dontCreateObjects);
         if (result) {
             g_route.clear();
+            g_levelGeometry.clear();
+            g_lastScannedObjectCount = 0;
             g_replayIndex = 0;
             g_recording = true;
             g_playbackActive = false;
