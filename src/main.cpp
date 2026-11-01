@@ -23,7 +23,7 @@ namespace {
         g_autoplayRequested = !g_autoplayRequested;
         g_paused = false;
         notify(g_autoplayRequested
-            ? "PHOSOPHURS: REQUEST ENABLED (ENGINE NOT READY)"
+            ? "PHOSOPHURS: REQUEST ENABLED (ROUTE RECORDER BUILD IN PROGRESS)"
             : "PHOSOPHURS: REQUEST DISABLED");
         log::info("Phosophurs autoplay request state: {}", g_autoplayRequested);
     }
