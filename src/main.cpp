@@ -48,6 +48,8 @@ namespace {
     float g_lastPlayerX = 0.f;
     bool g_havePlayerSample = false;
     constexpr double SIM_FRAME_SECONDS = 1.0 / 60.0;
+    double g_pauseStartedAt = 0.0;
+    void notify(std::string const& message);
 
     bool isKnownHazard(int id) {
         // Standard spike variants and common sawblade IDs. Unknown custom
@@ -113,10 +115,6 @@ namespace {
     bool buildPhysicsRoute(PlayLayer* layer) {
         if (!layer || !layer->m_player1 || g_levelGeometry.empty()) return false;
         auto player = layer->m_player1;
-        if (player->m_playerMode != 0) {
-            notify("PHOSOPHURS: EXPERIMENTAL PLANNER CURRENTLY SUPPORTS CUBE MODE ONLY");
-            return false;
-        }
         if (g_speedPerFrame <= 0.05f || g_jumpImpulse <= 0.1f) {
             notify("PHOSOPHURS: PLAY A SHORT CUBE RUN FIRST TO CALIBRATE SPEED AND JUMP");
             return false;
@@ -243,8 +241,20 @@ namespace {
 
     void pauseAutoplay() {
         if (!g_playbackActive) return;
-        g_paused = !g_paused;
-        notify(g_paused ? "PHOSOPHURS: REPLAY PAUSED" : "PHOSOPHURS: REPLAY RESUMED");
+        auto layer = PlayLayer::get();
+        if (!layer) return;
+        if (!g_paused) {
+            g_pauseStartedAt = layer->m_gameState.m_levelTime;
+            g_paused = true;
+            notify("PHOSOPHURS: REPLAY PAUSED");
+            return;
+        }
+        const double pausedFor = std::max(0.0, layer->m_gameState.m_levelTime - g_pauseStartedAt);
+        for (size_t i = g_replayIndex; i < g_route.size(); ++i) {
+            g_route[i].time += pausedFor;
+        }
+        g_paused = false;
+        notify("PHOSOPHURS: REPLAY RESUMED");
     }
 
     void recalculatePath() {
@@ -338,17 +348,27 @@ class $modify(PhosophursPlayLayer, PlayLayer) {
     bool init(GJGameLevel* level, bool useReplay, bool dontCreateObjects) {
         const bool result = PlayLayer::init(level, useReplay, dontCreateObjects);
         if (result) {
-            g_route.clear();
+            // Preserve the completed attempt when the player retries. The
+            // previous implementation cleared the route here, making replay
+            // impossible immediately after the first death.
+            const bool hasRecordedRoute = !g_route.empty() && !g_recording;
+            if (!hasRecordedRoute) {
+                g_route.clear();
+                g_recording = true;
+                log::info("Phosophurs: recording this attempt's input route.");
+            } else {
+                g_recording = false;
+                log::info("Phosophurs: keeping the previous attempt for replay.");
+            }
             g_levelGeometry.clear();
             g_lastScannedObjectCount = 0;
             // Keep calibrated movement/jump values across retries of the same
             // level so planning can run from the next attempt's start.
             g_havePlayerSample = false;
             g_replayIndex = 0;
-            g_recording = true;
             g_playbackActive = false;
             g_paused = false;
-            log::info("Phosophurs: recording this attempt's input route.");
+            g_pauseStartedAt = 0.0;
         }
         return result;
     }
