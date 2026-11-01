@@ -184,8 +184,8 @@ void PhosophursMenu::buildPage() {
     switch (m_tab) {
         case 0:
             addSection("AUTOPLAY", y);
-            addInfo("Press 4 to toggle the autoplay request state.", y);
-            addInfo("The automated input engine is not implemented yet.", y);
+            addInfo("Press 4 to replay the most recently recorded attempt.", y);
+            addInfo("First attempt records inputs automatically; restart, then press 4.", y);
             addSection("INPUT CONTROLS", y);
             addAction("Autoplay, pause and recalculation keybinds", "SETTINGS", [] { openSettingsPopup(Mod::get()); }, y);
             addToggle("Progress-based input variation", "progress-mistakes-enabled", y);
@@ -201,8 +201,8 @@ void PhosophursMenu::buildPage() {
             addInfo("Frame-perfect inputs always receive zero offset.", y);
             addInfo("Keyboard inputs are never position-randomised.", y);
             addSection("ENGINE STATUS", y);
-            addInfo("Route solver: NOT IMPLEMENTED", y);
-            addInfo("Automated input scheduler: NOT IMPLEMENTED", y);
+            addInfo("Route replay: WORKING - records presses and releases", y);
+            addInfo("Predictive path solver: NEXT DEVELOPMENT STAGE", y);
             addAction("Recalculate keybind", "SETTINGS", [] { openSettingsPopup(Mod::get()); }, y);
             break;
         case 2:
