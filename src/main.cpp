@@ -115,6 +115,45 @@ class $modify(PhosophursGameLayer, GJBaseGameLayer) {
     }
 };
 
+class $modify(PhosophursPlayLayer, PlayLayer) {
+    bool init(GJGameLevel* level, bool useReplay, bool dontCreateObjects) {
+        const bool result = PlayLayer::init(level, useReplay, dontCreateObjects);
+        if (result) {
+            g_route.clear();
+            g_replayIndex = 0;
+            g_recording = true;
+            g_playbackActive = false;
+            g_paused = false;
+            log::info("Phosophurs: recording this attempt's input route.");
+        }
+        return result;
+    }
+
+    void destroyPlayer(PlayerObject* player, GameObject* object) {
+        if (!g_playbackActive) {
+            g_recording = false;
+            if (!g_route.empty()) {
+                notify(fmt::format("PHOSOPHURS: RECORDED {} INPUT EVENTS", g_route.size()));
+            }
+        }
+        PlayLayer::destroyPlayer(player, object);
+    }
+
+    void levelComplete() {
+        g_recording = false;
+        g_playbackActive = false;
+        PlayLayer::levelComplete();
+    }
+
+    void onQuit() {
+        g_recording = false;
+        g_playbackActive = false;
+        g_route.clear();
+        g_replayIndex = 0;
+        PlayLayer::onQuit();
+    }
+};
+
 // The player input hook is the common point reached by normal and
 // mod-synthesised gameplay presses. Mouse presses are identified from the
 // Windows button state; the pathfinder can also call the explicit audio
