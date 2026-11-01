@@ -188,18 +188,13 @@ void PhosophursMenu::buildPage() {
             addInfo("First attempt records inputs automatically; restart, then press 4.", y);
             addSection("INPUT CONTROLS", y);
             addAction("Autoplay, pause and recalculation keybinds", "SETTINGS", [] { openSettingsPopup(Mod::get()); }, y);
-            addToggle("Progress-based input variation", "progress-mistakes-enabled", y);
-            addCycle("Variation behaviour", "mistake-mode", y, {0,1,2}, {"Extra clicks","Skipped clicks","Both"});
-            addCycle("Variation probability", "mistake-chance", y, {0,5,10,15,20,30,50,75,100}, {"0%","5%","10%","15%","20%","30%","50%","75%","100%"});
-            addCycle("Variation start", "progress-start", y, {5,10,20,30,40,50,60,70,80,90,100}, {"5%","10%","20%","30%","40%","50%","60%","70%","80%","90%","100%"});
+            addInfo("Replay uses the recorded press and release timestamps.", y);
+            addInfo("Progress-based mistakes are not implemented yet.", y);
             break;
         case 1:
             addSection("PATHFINDER OPTIONS", y);
-            addToggle("Humanised mouse-click offsets", "humanised-clicks-enabled", y);
-            addFloatCycle("Randomisation radius", "humanised-click-strength", y, {0,0.5,1,2,3,4,6,8,10,12});
-            addToggle("Show predicted path", "show-predicted-path", y);
-            addInfo("Frame-perfect inputs always receive zero offset.", y);
-            addInfo("Keyboard inputs are never position-randomised.", y);
+            addInfo("Mouse-position variation is not connected to gameplay input.", y);
+            addInfo("Predicted-path rendering is not implemented yet.", y);
             addSection("ENGINE STATUS", y);
             addInfo("Route replay: records and replays press/release timing", y);
             addInfo("Physics planner: EXPERIMENTAL CUBE / SPIKE ROUTES", y);
@@ -220,11 +215,10 @@ void PhosophursMenu::buildPage() {
             break;
         case 3:
             addSection("VISUAL OVERLAY", y);
-            addToggle("Show predicted path", "show-predicted-path", y);
-            addInfo("Planner currently models cube jumps against known spike/saw IDs.", y);
+            addInfo("Predicted-path rendering is not implemented yet.", y);
+            addInfo("Planner currently models vertical jumps against known spike/saw IDs.", y);
             addInfo("Ship, wave, portals, slopes and custom hazards are unsupported.", y);
             addInfo("Route prediction is experimental; test in practice mode.", y);
-            addAction("Path display keybind", "SETTINGS", [] { openSettingsPopup(Mod::get()); }, y);
             break;
         case 4:
             addSection("GENERAL SETTINGS", y);
