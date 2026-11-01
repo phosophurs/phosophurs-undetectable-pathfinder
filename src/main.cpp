@@ -31,7 +31,6 @@ namespace {
     bool g_playbackActive = false;
     bool g_dispatchingReplayInput = false;
     bool g_paused = false;
-    bool g_showPath = true;
 
     // Immutable snapshot of the level's placed geometry. This is the input
     // map for the predictive planner; it is deliberately separate from the
@@ -435,14 +434,6 @@ $on_game(Loaded) {
     listenForKeybindSettingPresses("recalculate-key",
         [](Keybind const&, bool down, bool repeat, double) {
             if (down && !repeat) recalculatePath();
-        });
-
-    listenForKeybindSettingPresses("visual-key",
-        [](Keybind const&, bool down, bool repeat, double) {
-            if (!down || repeat) return;
-            g_showPath = !g_showPath;
-            notify(g_showPath ? "PHOSOPHURS: PATH DISPLAY PREFERENCE ON (OVERLAY NOT READY)"
-                              : "PHOSOPHURS: PATH DISPLAY PREFERENCE OFF");
         });
 
     listenForKeybindSettingPresses("sounds-key",
