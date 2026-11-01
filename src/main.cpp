@@ -87,6 +87,34 @@ namespace {
     }
 }
 
+// Record real gameplay button events and replay them through Geometry Dash's
+// own input handler, keeping press and release timing intact.
+class $modify(PhosophursGameLayer, GJBaseGameLayer) {
+    void handleButton(bool down, int button, bool isPlayer1) {
+        if (PlayLayer::get() == this && g_recording && !g_dispatchingReplayInput) {
+            g_route.push_back({this->m_gameState.m_levelTime, down, button, isPlayer1});
+        }
+        GJBaseGameLayer::handleButton(down, button, isPlayer1);
+    }
+
+    void postUpdate(float dt) {
+        GJBaseGameLayer::postUpdate(dt);
+        if (PlayLayer::get() != this || !g_playbackActive || g_paused) return;
+
+        const double now = this->m_gameState.m_levelTime;
+        while (g_replayIndex < g_route.size() && g_route[g_replayIndex].time <= now) {
+            const auto event = g_route[g_replayIndex++];
+            g_dispatchingReplayInput = true;
+            this->handleButton(event.down, event.button, event.isPlayer1);
+            g_dispatchingReplayInput = false;
+        }
+        if (g_replayIndex >= g_route.size()) {
+            g_playbackActive = false;
+            notify("PHOSOPHURS: ROUTE REPLAY FINISHED");
+        }
+    }
+};
+
 // The player input hook is the common point reached by normal and
 // mod-synthesised gameplay presses. Mouse presses are identified from the
 // Windows button state; the pathfinder can also call the explicit audio
