@@ -36,12 +36,26 @@ namespace {
     }
 
     void toggleAutoplay() {
-        g_autoplayRequested = !g_autoplayRequested;
+        auto layer = PlayLayer::get();
+        if (!layer) {
+            notify("PHOSOPHURS: ENTER A LEVEL FIRST");
+            return;
+        }
+        if (g_route.empty()) {
+            notify("PHOSOPHURS: NO ROUTE YET - PLAY A RUN TO RECORD ONE");
+            return;
+        }
+        if (layer->m_gameState.m_levelTime > 0.20) {
+            notify("PHOSOPHURS: RESTART THE LEVEL, THEN PRESS 4");
+            return;
+        }
+        g_replayIndex = 0;
+        g_playbackActive = !g_playbackActive;
+        g_recording = false;
         g_paused = false;
-        notify(g_autoplayRequested
-            ? "PHOSOPHURS: REQUEST ENABLED (ROUTE RECORDER BUILD IN PROGRESS)"
-            : "PHOSOPHURS: REQUEST DISABLED");
-        log::info("Phosophurs autoplay request state: {}", g_autoplayRequested);
+        notify(g_playbackActive
+            ? fmt::format("PHOSOPHURS: REPLAYING {} INPUT EVENTS", g_route.size())
+            : "PHOSOPHURS: REPLAY STOPPED");
     }
 
     void openMenu() {
