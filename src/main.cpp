@@ -63,17 +63,13 @@ namespace {
     }
 
     void pauseAutoplay() {
-        if (!g_autoplayRequested) return;
+        if (!g_playbackActive) return;
         g_paused = !g_paused;
-        notify(g_paused ? "PHOSOPHURS: REQUEST PAUSED" : "PHOSOPHURS: REQUEST RESUMED");
+        notify(g_paused ? "PHOSOPHURS: REPLAY PAUSED" : "PHOSOPHURS: REPLAY RESUMED");
     }
 
     void recalculatePath() {
-        if (!g_autoplayRequested) {
-            notify("PHOSOPHURS: START AUTOPLAY FIRST");
-            return;
-        }
-        notify("PHOSOPHURS: PATH SOLVER NOT IMPLEMENTED");
+        notify("PHOSOPHURS: ROUTE SOLVER IS THE NEXT BUILD STAGE");
     }
 
     void toggleClickSounds() {
