@@ -1,35 +1,48 @@
-# Phosophurs Undetectable Pathfinder
+# Phosophurs Pathfinder
 
-An experimental Windows Geometry Dash mod built with Geode. This project is a work-in-progress input/audio and pathfinding foundation; it is **not yet an automatic level solver**.
+An experimental Windows Geometry Dash mod built with Geode.
 
 ## Compatibility
 - Geometry Dash: Windows 2.2081
 - Geode SDK: 5.11.2
 - Build target: Win64
 
-## Current features
-- Five-tab in-game menu (Autoplay, Pathfinder, Sounds, Visuals, Settings), opened with **Z** by default.
-- Configurable keybinds through Geode's settings UI.
-- Autoplay request toggle on **4** by default. At this stage it changes the request/status state only; it does not control the player.
-- Separate generated keyboard-style and mouse-style click sounds.
-- Four waveform variants per sound bank, with optional random variation.
-- In-menu keyboard and mouse sound previews.
-- Master, keyboard, mouse, and waveform-variation audio settings.
-- Optional random mouse-click offset helper, configurable from 0–12 px. Frame-perfect inputs always receive zero offset; keyboard inputs are unaffected.
-- Optional progress-variation settings for future input scheduling.
+## Working features
+- Five-tab in-game menu, opened with **Z** by default.
+- Configurable Geode keybinds.
+- Attempt input recording, including press and release timestamps.
+- Replay of the last completed attempt with **4** by default.
+- Replay pause/resume keybind. Pausing shifts the remaining event timestamps so inputs do not all fire immediately on resume.
+- Generated keyboard-style and mouse-style click audio, with separate enable switches and in-menu previews.
+- Four waveform variants per sound bank, with optional variation.
 
-## Not implemented yet
-- Level analysis and route solving.
-- Automated gameplay input scheduling.
-- Pause/resume of an active automated run.
-- Progress-based mistake execution.
-- Predicted path rendering and hazard/collision preview.
-- Applying the humanised offset helper to live mouse input.
+## Experimental / limited
+- Physics route planner: attempts a simple vertical-jump route against a small list of recognised spike and saw object IDs. It requires a calibration run and a restart before recalculation. It is not a general Geometry Dash solver and may fail on unusual hitboxes, speed changes, platforms, slopes, portals, custom objects, or non-cube gameplay. Treat generated routes as experimental and test them in practice mode.
+- Mouse-position offset helper exists in source but is not connected to live gameplay input.
+- Predicted-path rendering is not implemented.
+- Progress-based input variation is not implemented.
 
-The click-sound hook currently infers mouse input from the Windows mouse-button state. This is a heuristic and cannot reliably identify every input source. The audio preview buttons provide a direct way to test each sound bank.
+## Replay workflow
+1. Enter a level and play one attempt. The mod records the gameplay inputs.
+2. After dying, restart the level.
+3. Press **4** to replay the recorded attempt.
+4. Use the configured pause key to pause/resume playback.
+
+The previous attempt is retained across a retry. Leaving the level clears the in-memory route.
+
+## Physics planner workflow
+1. Play a short cube attempt so the mod can estimate horizontal movement and jump impulse.
+2. Restart the level.
+3. At the start line, use the configured recalculation key.
+4. If a route is generated, press **4** to play it.
+
+The planner is intentionally conservative and supports only a small subset of standard geometry. A successful build does not mean a route has been validated in-game.
+
+## Click audio
+The mod generates its own short WAV samples at runtime. Input-source detection is heuristic, so some inputs may be classified incorrectly. Audio previews are available in the Sounds tab.
 
 ## Build
-Pushes to the main branch trigger the Windows Geode build workflow. A successful run uploads a `Phosophurs-Windows-geode` artifact. You can also run the workflow manually from the repository's Actions tab.
+Pushes to `main` trigger the Windows Geode build workflow. A successful run uploads a `Phosophurs-Windows-geode` artifact for 14 days. The repository's Actions tab shows build status and artifacts.
 
-## Safety and integrity
-This project does not include anti-cheat bypasses, stealth mechanisms, or detection-evasion features. The name is a project name, not a claim that the mod is undetectable.
+## Integrity
+This project does not include anti-cheat bypasses, stealth mechanisms, or detection-evasion features. The project name is not a claim that the mod is undetectable.
