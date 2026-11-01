@@ -17,7 +17,17 @@
 using namespace geode::prelude;
 
 namespace {
-    bool g_autoplayRequested = false;
+    struct RecordedInput {
+        double time;
+        bool down;
+        int button;
+        bool isPlayer1;
+    };
+    std::vector<RecordedInput> g_route;
+    size_t g_replayIndex = 0;
+    bool g_recording = false;
+    bool g_playbackActive = false;
+    bool g_dispatchingReplayInput = false;
     bool g_paused = false;
     bool g_showPath = true;
 
