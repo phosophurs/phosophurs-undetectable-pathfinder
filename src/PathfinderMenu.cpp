@@ -201,8 +201,9 @@ void PhosophursMenu::buildPage() {
             addInfo("Frame-perfect inputs always receive zero offset.", y);
             addInfo("Keyboard inputs are never position-randomised.", y);
             addSection("ENGINE STATUS", y);
-            addInfo("Route replay: WORKING - records presses and releases", y);
-            addInfo("Predictive path solver: NEXT DEVELOPMENT STAGE", y);
+            addInfo("Route replay: records and replays press/release timing", y);
+            addInfo("Physics planner: EXPERIMENTAL CUBE / SPIKE ROUTES", y);
+            addInfo("Play a cube run first, restart, then recalculate from 0%.", y);
             addAction("Recalculate keybind", "SETTINGS", [] { openSettingsPopup(Mod::get()); }, y);
             break;
         case 2:
@@ -220,9 +221,9 @@ void PhosophursMenu::buildPage() {
         case 3:
             addSection("VISUAL OVERLAY", y);
             addToggle("Show predicted path", "show-predicted-path", y);
-            addInfo("Predicted route overlay: NOT IMPLEMENTED", y);
-            addInfo("Live player marker: NOT IMPLEMENTED", y);
-            addInfo("Collision and hazard preview: NOT IMPLEMENTED", y);
+            addInfo("Planner currently models cube jumps against known spike/saw IDs.", y);
+            addInfo("Ship, wave, portals, slopes and custom hazards are unsupported.", y);
+            addInfo("Route prediction is experimental; test in practice mode.", y);
             addAction("Path display keybind", "SETTINGS", [] { openSettingsPopup(Mod::get()); }, y);
             break;
         case 4:
