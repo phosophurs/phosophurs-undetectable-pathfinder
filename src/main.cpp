@@ -8,6 +8,7 @@
 #include <vector>
 #include <cstddef>
 #include <algorithm>
+#include <cmath>
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
 #include <windows.h>
@@ -41,6 +42,158 @@ namespace {
     };
     std::vector<LevelObjectSnapshot> g_levelGeometry;
     size_t g_lastScannedObjectCount = 0;
+    float g_speedPerFrame = 0.f;
+    float g_jumpImpulse = 0.f;
+    float g_gravityPerFrame = 0.9f;
+    float g_lastPlayerX = 0.f;
+    bool g_havePlayerSample = false;
+    constexpr double SIM_FRAME_SECONDS = 1.0 / 60.0;
+
+    bool isKnownHazard(int id) {
+        // Standard spike variants and common sawblade IDs. Unknown custom
+        // objects are intentionally not guessed to be hazards.
+        switch (id) {
+            case 8: case 39: case 103: case 392:
+            case 88: case 89: case 216: case 217:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    struct PlannedJump {
+        double time;
+        double releaseTime;
+    };
+
+    bool trajectoryClearsHazard(
+        cocos2d::CCPoint start,
+        float playerWidth,
+        float playerHeight,
+        cocos2d::CCRect hazard,
+        float speed,
+        float gravity,
+        float impulse,
+        int launchDelay,
+        int maxFrames
+    ) {
+        float x = start.x;
+        float y = start.y;
+        float vy = 0.f;
+        bool jumped = false;
+        bool landed = false;
+        const float groundY = start.y;
+        for (int frame = 0; frame < maxFrames; ++frame) {
+            if (!jumped && frame == launchDelay) {
+                vy = impulse;
+                jumped = true;
+            }
+            if (jumped && !landed) {
+                vy -= gravity;
+                y += vy;
+                if (y <= groundY && vy < 0.f) {
+                    y = groundY;
+                    vy = 0.f;
+                    landed = true;
+                }
+            }
+            x += speed;
+            cocos2d::CCRect playerRect(
+                x - playerWidth * 0.5f,
+                y - playerHeight * 0.5f,
+                playerWidth,
+                playerHeight
+            );
+            if (playerRect.intersectsRect(hazard)) return false;
+            if (x > hazard.getMaxX() + playerWidth + 8.f) return true;
+        }
+        return false;
+    }
+
+    bool buildPhysicsRoute(PlayLayer* layer) {
+        if (!layer || !layer->m_player1 || g_levelGeometry.empty()) return false;
+        auto player = layer->m_player1;
+        if (player->m_playerMode != 0) {
+            notify("PHOSOPHURS: EXPERIMENTAL PLANNER CURRENTLY SUPPORTS CUBE MODE ONLY");
+            return false;
+        }
+        if (g_speedPerFrame <= 0.05f || g_jumpImpulse <= 0.1f) {
+            notify("PHOSOPHURS: PLAY A SHORT CUBE RUN FIRST TO CALIBRATE SPEED AND JUMP");
+            return false;
+        }
+
+        const auto playerRect = player->getObjectRect();
+        const float width = playerRect.size.width;
+        const float height = playerRect.size.height;
+        const auto start = player->getPosition();
+        const float gravity = std::clamp(g_gravityPerFrame, 0.05f, 4.0f);
+        const float impulse = std::clamp(g_jumpImpulse, 2.0f, 20.0f);
+
+        std::vector<cocos2d::CCRect> hazards;
+        for (const auto& object : g_levelGeometry) {
+            if (!isKnownHazard(object.objectID)) continue;
+            if (object.bounds.getMaxX() <= start.x + width * 0.25f) continue;
+            hazards.push_back(object.bounds);
+        }
+        std::sort(hazards.begin(), hazards.end(),
+            [](const auto& a, const auto& b) { return a.getMinX() < b.getMinX(); });
+
+        if (hazards.empty()) {
+            notify("PHOSOPHURS: NO SUPPORTED SPIKES OR SAWS FOUND AHEAD");
+            return false;
+        }
+
+        std::vector<PlannedJump> jumps;
+        float simulatedX = start.x;
+        double simulatedTime = layer->m_gameState.m_levelTime;
+        for (const auto& hazard : hazards) {
+            if (hazard.getMaxX() < simulatedX) continue;
+            const float distance = hazard.getMinX() - simulatedX;
+            const int framesUntilHazard = std::max(0,
+                static_cast<int>(std::floor(distance / g_speedPerFrame)));
+            bool found = false;
+            int chosenDelay = 0;
+            const int searchLimit = std::min(framesUntilHazard, 90);
+
+            for (int delay = std::max(0, framesUntilHazard - searchLimit);
+                 delay <= framesUntilHazard; ++delay) {
+                const int simulationFrames = framesUntilHazard - delay +
+                    static_cast<int>(std::ceil((hazard.size.width + width * 2.f) / g_speedPerFrame)) + 80;
+                if (trajectoryClearsHazard(
+                    {simulatedX, start.y}, width, height, hazard,
+                    g_speedPerFrame, gravity, impulse, delay, simulationFrames
+                )) {
+                    chosenDelay = delay;
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found) {
+                notify(fmt::format("PHOSOPHURS: NO SAFE CUBE JUMP FOUND NEAR X={:.0f}", hazard.getMinX()));
+                return false;
+            }
+
+            const double jumpTime = simulatedTime + chosenDelay * SIM_FRAME_SECONDS;
+            jumps.push_back({jumpTime, jumpTime + SIM_FRAME_SECONDS});
+            const int passFrames = chosenDelay +
+                static_cast<int>(std::ceil((hazard.size.width + width * 2.f) / g_speedPerFrame)) + 2;
+            simulatedX += g_speedPerFrame * passFrames;
+            simulatedTime += passFrames * SIM_FRAME_SECONDS;
+        }
+
+        g_route.clear();
+        for (const auto& jump : jumps) {
+            g_route.push_back({jump.time, true, 1, true});
+            g_route.push_back({jump.releaseTime, false, 1, true});
+        }
+        std::sort(g_route.begin(), g_route.end(),
+            [](const auto& a, const auto& b) { return a.time < b.time; });
+        g_recording = false;
+        g_playbackActive = false;
+        notify(fmt::format("PHOSOPHURS: BUILT EXPERIMENTAL ROUTE WITH {} JUMPS", jumps.size()));
+        return true;
+    }
 
     void scanLevelGeometry(PlayLayer* layer) {
         g_levelGeometry.clear();
@@ -107,10 +260,9 @@ namespace {
             return;
         }
 
-        notify(fmt::format(
-            "PHOSOPHURS: SCANNED {} LEVEL OBJECTS - PLANNER STILL IN DEVELOPMENT",
-            g_lastScannedObjectCount
-        ));
+        if (buildPhysicsRoute(layer)) return;
+        notify(fmt::format("PHOSOPHURS: SCANNED {} OBJECTS; NO ROUTE GENERATED",
+            g_lastScannedObjectCount));
     }
 
     void toggleClickSounds() {
@@ -132,16 +284,40 @@ namespace {
 // own input handler, keeping press and release timing intact.
 class $modify(PhosophursGameLayer, GJBaseGameLayer) {
     void handleButton(bool down, int button, bool isPlayer1) {
-        if (PlayLayer::get() == this && g_recording && !g_dispatchingReplayInput) {
-            g_route.push_back({this->m_gameState.m_levelTime, down, button, isPlayer1});
-        }
+        auto layer = PlayLayer::get();
+        bool wasGrounded = layer && layer->m_player1 && layer->m_player1->m_isOnGround;
         GJBaseGameLayer::handleButton(down, button, isPlayer1);
+        if (layer && g_recording && !g_dispatchingReplayInput) {
+            g_route.push_back({layer->m_gameState.m_levelTime, down, button, isPlayer1});
+            if (down && wasGrounded && layer->m_player1) {
+                const float measured = static_cast<float>(std::abs(layer->m_player1->m_yVelocity));
+                if (measured > 1.f && measured < 25.f) g_jumpImpulse = measured;
+            }
+        }
     }
+};
 
+class $modify(PhosophursPlayLayer, PlayLayer) {
     void postUpdate(float dt) {
-        GJBaseGameLayer::postUpdate(dt);
-        if (PlayLayer::get() != this || !g_playbackActive || g_paused) return;
+        PlayLayer::postUpdate(dt);
+        if (!this->m_player1) return;
 
+        const float currentX = this->m_player1->getPositionX();
+        if (g_havePlayerSample && dt > 0.f) {
+            const float dx = currentX - g_lastPlayerX;
+            if (dx > 0.f && dx < 40.f) {
+                const float measuredPerFrame = dx * (dt * 60.f);
+                g_speedPerFrame = g_speedPerFrame <= 0.f
+                    ? measuredPerFrame
+                    : g_speedPerFrame * 0.85f + measuredPerFrame * 0.15f;
+            }
+        }
+        g_lastPlayerX = currentX;
+        g_havePlayerSample = true;
+        const float gravity = static_cast<float>(std::abs(this->m_player1->m_gravity));
+        if (gravity > 0.05f && gravity < 4.f) g_gravityPerFrame = gravity;
+
+        if (!g_playbackActive || g_paused) return;
         const double now = this->m_gameState.m_levelTime;
         while (g_replayIndex < g_route.size() && g_route[g_replayIndex].time <= now) {
             const auto event = g_route[g_replayIndex++];
@@ -154,15 +330,16 @@ class $modify(PhosophursGameLayer, GJBaseGameLayer) {
             notify("PHOSOPHURS: ROUTE REPLAY FINISHED");
         }
     }
-};
 
-class $modify(PhosophursPlayLayer, PlayLayer) {
     bool init(GJGameLevel* level, bool useReplay, bool dontCreateObjects) {
         const bool result = PlayLayer::init(level, useReplay, dontCreateObjects);
         if (result) {
             g_route.clear();
             g_levelGeometry.clear();
             g_lastScannedObjectCount = 0;
+            g_speedPerFrame = 0.f;
+            g_jumpImpulse = 0.f;
+            g_havePlayerSample = false;
             g_replayIndex = 0;
             g_recording = true;
             g_playbackActive = false;
