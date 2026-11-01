@@ -303,7 +303,7 @@ class $modify(PhosophursGameLayer, GJBaseGameLayer) {
         GJBaseGameLayer::handleButton(down, button, isPlayer1);
         if (layer && g_recording && !g_dispatchingReplayInput) {
             g_recordingRoute.push_back({layer->m_gameState.m_levelTime, down, button, isPlayer1});
-            if (down && wasGrounded && layer->m_player1) {
+            if (down && button == 1 && wasGrounded && layer->m_player1) {
                 const float measured = static_cast<float>(std::abs(layer->m_player1->m_yVelocity));
                 if (measured > 1.f && measured < 25.f) g_jumpImpulse = measured;
             }
