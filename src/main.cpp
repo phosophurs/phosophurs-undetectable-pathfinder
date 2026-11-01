@@ -253,6 +253,10 @@ namespace {
             notify("PHOSOPHURS: ENTER A LEVEL BEFORE SCANNING");
             return;
         }
+        if (layer->m_gameState.m_levelTime > 0.20) {
+            notify("PHOSOPHURS: RESTART FIRST - PLAN FROM THE LEVEL START");
+            return;
+        }
 
         scanLevelGeometry(layer);
         if (g_levelGeometry.empty()) {
@@ -337,8 +341,8 @@ class $modify(PhosophursPlayLayer, PlayLayer) {
             g_route.clear();
             g_levelGeometry.clear();
             g_lastScannedObjectCount = 0;
-            g_speedPerFrame = 0.f;
-            g_jumpImpulse = 0.f;
+            // Keep calibrated movement/jump values across retries of the same
+            // level so planning can run from the next attempt's start.
             g_havePlayerSample = false;
             g_replayIndex = 0;
             g_recording = true;
