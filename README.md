@@ -1,48 +1,52 @@
 # Phosophurs Pathfinder
 
-An experimental Windows Geometry Dash mod built with Geode.
+An autonomous Geometry Dash TAS/pathfinding mod for **Windows Geometry Dash 2.2081**.
 
-## Compatibility
-- Geometry Dash: Windows 2.2081
-- Geode SDK: 5.11.2
-- Build target: Win64
+This replaces the previous attempt recorder with a real search engine. It reads the loaded level, searches for an input sequence, then replays that candidate inside Geometry Dash. The game itself verifies whether the route survives; when the model and game disagree, the solver re-anchors on the real player state and searches the remaining section again.
 
-## Working features
-- Five-tab in-game menu, opened with **Z** by default.
-- Configurable Geode keybinds.
-- Attempt input recording, including press and release timestamps.
-- Replay of the last completed attempt with **4** by default.
-- Replay pause/resume keybind. Pausing shifts the remaining event timestamps so inputs do not all fire immediately on resume.
-- Generated keyboard-style and mouse-style click audio, with separate enable switches and in-menu previews.
-- Four waveform variants per sound bank, with optional variation.
+## Gameplay modes
 
-## Experimental / limited
-- Physics route planner: attempts a simple vertical-jump route against a small list of recognised spike and saw object IDs. It requires a calibration run and a restart before recalculation. It is not a general Geometry Dash solver and may fail on unusual hitboxes, speed changes, platforms, slopes, portals, custom objects, or non-cube gameplay. Treat generated routes as experimental and test them in practice mode.
-- Mouse-position offset helper exists in source but is not connected to live gameplay input.
-- Predicted-path rendering is not implemented.
-- Progress-based input variation is not implemented.
+The physics model includes all eight classic modes:
 
-## Replay workflow
-1. Enter a level and play one attempt. The mod records the gameplay inputs.
-2. After dying, restart the level.
-3. Press **4** to replay the recorded attempt.
-4. Use the configured pause key to pause/resume playback.
+- Cube
+- Ship
+- Ball
+- UFO
+- Wave
+- Robot
+- Spider
+- Swing
 
-The previous attempt is retained across a retry. Leaving the level clears the in-memory route.
+**Platformer levels are not supported by this solver.** Platformer has free horizontal steering and backtracking, unlike classic auto-scroll levels, so it requires a different search formulation. The mod refuses platformer levels instead of generating a misleading route.
 
-## Physics planner workflow
-1. Play a short cube attempt so the mod can estimate horizontal movement and jump impulse.
-2. Restart the level.
-3. At the start line, use the configured recalculation key.
-4. If a route is generated, press **4** to play it.
+## How to use
 
-The planner is intentionally conservative and supports only a small subset of standard geometry. A successful build does not mean a route has been validated in-game.
+1. Install Geode for Windows and place the built `.geode` file in `Geometry Dash/geode/mods/`.
+2. Open a classic Geometry Dash level.
+3. Open the Pathfinder panel from the level's play menu and choose **Solve**.
+4. The solver searches without recording your gameplay or requiring a calibration attempt.
+5. When a candidate is found, the game replays it to verify the result. The solver repairs the plan if the real game disagrees with its physics model.
 
-## Click audio
-The mod generates its own short WAV samples at runtime. Input-source detection is heuristic, so some inputs may be classified incorrectly. Audio previews are available in the Sounds tab.
+The overlay and hotkeys are described in the upstream `docs/RUNNING.md` file.
 
-## Build
-Pushes to `main` trigger the Windows Geode build workflow. A successful run uploads a `Phosophurs-Windows-geode` artifact for 14 days. The repository's Actions tab shows build status and artifacts.
+## Scope and limitations
 
-## Integrity
-This project does not include anti-cheat bypasses, stealth mechanisms, or detection-evasion features. The project name is not a claim that the mod is undetectable.
+- The upstream solver reports cold solves for all 22 official levels on its tested build.
+- Custom levels may work, but are not guaranteed. Unsupported triggers, moving objects, or mechanics can make a level fail or take much longer.
+- This is a TAS/pathfinding tool. It is not a promise that every custom level can be solved.
+- Automated runs are treated as bot/TAS activity; the upstream safety logic blocks achievements, statistics, coins and level records while the bot is driving.
+
+## Build target
+
+- Geometry Dash: **2.2081 (Windows / Steam)**
+- Geode SDK: **5.10.1** (the project metadata pins the tested SDK)
+- CMake: 3.21+
+- Visual Studio 2022 with the C++ desktop workload
+
+Pushes and pull requests build through GitHub Actions. A successful build only proves compilation; in-game solving still needs verification.
+
+## Credits and licence
+
+The autonomous reachability-DP engine and in-game repair architecture are based on [gdsolver](https://github.com/gdsolver/gdsolver), with the Geometry Dash 2.2081 port from [CarlosDev-max/gdsolver-FORK](https://github.com/CarlosDev-max/gdsolver-FORK).
+
+The upstream project is MIT-licensed. Its copyright and licence notice are preserved in [LICENSE](LICENSE). This repository's mod packaging, branding and integration are maintained as Phosophurs Pathfinder.
